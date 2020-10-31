@@ -1,7 +1,15 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser')
+const mongoose = require('mongoose');
+const Livro = require('./models/livro');
 
+mongoose.connect('mongodb+srv://root:Z7xhoYRbLZhS19aY@m0-cluster.nzqhq.mongodb.net/app-mean?retryWrites=true&w=majority')
+.then( () => {
+  console.log('Conexão OK');
+}).catch( () => {
+  console.log('Conexão NOK');
+})
 app.use(bodyParser.json())
 
 const livros = [
@@ -27,16 +35,24 @@ app.use ( (req, res, next) => {
 })
 
 app.post('/api/livros', (req, res, next) => {
-  const livro = req.body;
+  const livro = new Livro({
+    titulo: req.body.titulo,
+    id: req.body.id,
+    autor: req.body.autor,
+    nPaginas: req.body.nPaginas
+  });
+  livro.save();
   console.log(livro);
   res.status(201).json({mensagem: 'Livro inserido'});
 });
 
 app.use ('/api/livros', (req, res, next) => {
-  res.status(200).json({
-    mensagem: "Tudo OK!",
-    livros: livros
-  });
+  Livro.find().then( documents => {
+    res.status(200).json({
+      mensagem: "Tudo OK!",
+      livros: documents
+    });
+  })
 })
 
 module.exports = app;
