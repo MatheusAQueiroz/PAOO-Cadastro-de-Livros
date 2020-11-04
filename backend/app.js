@@ -41,13 +41,25 @@ app.post('/api/livros', (req, res, next) => {
     autor: req.body.autor,
     nPaginas: req.body.nPaginas
   });
-  livro.save();
-  console.log(livro);
-  res.status(201).json({mensagem: 'Livro inserido'});
+  livro.save()
+  .then(livroInserido => {
+    res.status(201).json({
+      mensagem: 'Livro inserido',
+      _id: livroInserido._id
+    });
+  })
 });
+
+app.delete('/api/livros/:id', (req, res, next) => {
+  Livro.deleteOne({_id: req.params.id}).then((resultado) => {
+    console.log(resultado);
+    res.status(200).json({mensagem: "Livro removido"});
+  })
+})
 
 app.use ('/api/livros', (req, res, next) => {
   Livro.find().then( documents => {
+    console.log(documents);
     res.status(200).json({
       mensagem: "Tudo OK!",
       livros: documents

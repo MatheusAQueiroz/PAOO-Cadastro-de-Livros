@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Livro } from '../livro.model';
 import { LivroService } from '../livro.service';
-import { Subscription, Observable} from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-livro-lista',
@@ -13,6 +13,10 @@ export class LivroListaComponent implements OnInit, OnDestroy {
   private livrosSubscription: Subscription;
 
   constructor(public livroService: LivroService) { }
+
+  onDelete(id: string): void {
+    this.livroService.removerLivro(id);
+  }
 
   ngOnInit(): void {
     this.livroService.getLivros();

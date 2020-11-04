@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Livro } from './livro.model';
 import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
 export class LivroService {
@@ -11,21 +12,43 @@ export class LivroService {
   constructor (private httpClient: HttpClient) {}
 
   getLivros(): void {
-    this.httpClient.get<{mensagem: string, livros: Livro[]}>('http://localhost:3000/api/clientes').subscribe( (dados) => {
-      this.livros = dados.livros;
+    this.httpClient.get<{mensagem: string, livros: any}>('http://localhost:3000/api/livros')
+    .pipe(map((dados) => {
+      return dados.livros.map(livro => {
+        return {
+          _id: livro._id,
+          autor: livro.autor,
+          id: livro.id,
+          titulo: livro.titulo,
+          nPaginas: livro.nPaginas
+        }
+      })
+    }))
+    .subscribe( (livros) => {
+      this.livros = livros;
       this.listaLivrosAtualizada.next([...this.livros]);
     })
   }
 
+  removerLivro(id: string): void {
+    this.httpClient.delete(`http://localhost:3000/api/livros/${id}`).subscribe( () => {
+      this.livros = this.livros.filter( (liv) => {
+        return liv._id !== id;
+      })
+      this.listaLivrosAtualizada.next([...this.livros]);
+    });
+  }
+
   adicionarLivro(titulo: string, id: string, autor: string, nPaginas: string) {
     const livro: Livro = {
+      _id: null,
       titulo: titulo,
       id: id,
       autor: autor,
       nPaginas: nPaginas
     }
-    this.httpClient.post<{mensagem: string}>('http://localhost:3000/api/livros', livro).subscribe( (dados) => {
-      console.log(dados.mensagem);
+    this.httpClient.post<{mensagem: string, _id: string}>('http://localhost:3000/api/livros', livro).subscribe( (dados) => {
+      livro._id = dados._id
       this.livros.push(livro);
       this.listaLivrosAtualizada.next([...this.livros]);
     })
