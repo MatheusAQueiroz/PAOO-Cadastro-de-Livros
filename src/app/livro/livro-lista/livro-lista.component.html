@@ -7,7 +7,7 @@
     <p>Autor: {{livro.autor}}</p>
     <p>N. de Páginas: {{livro.nPaginas}}</p>
     <mat-action-row>
-      <button mat-button color="primary">Editar</button>
+      <a mat-button color="primary" [routerLink]="['/editar',livro._id]" >Editar</a>
       <button mat-button color="warn" (click)='onDelete(livro._id)'>Remover</button>
     </mat-action-row>
   </mat-expansion-panel>

@@ -3,6 +3,7 @@ import { Livro } from './livro.model';
 import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { stringify } from '@angular/compiler/src/util';
 
 @Injectable({providedIn: 'root'})
 export class LivroService {
@@ -10,6 +11,10 @@ export class LivroService {
   private listaLivrosAtualizada = new Subject<Livro[]>();
 
   constructor (private httpClient: HttpClient) {}
+
+  getLivro(idLivro: string) {
+    return this.httpClient.get<{_id: string, titulo: string, id: string, autor: string, nPaginas: string}>(`http://localhost:3000/api/livros/${idLivro}`);
+  }
 
   getLivros(): void {
     this.httpClient.get<{mensagem: string, livros: any}>('http://localhost:3000/api/livros')
@@ -37,6 +42,18 @@ export class LivroService {
       })
       this.listaLivrosAtualizada.next([...this.livros]);
     });
+  }
+
+  atualizarLivro(_id: string, titulo: string, id: string, autor: string, nPaginas: string) {
+    const livro: Livro = {_id, titulo, id, autor, nPaginas};
+    this.httpClient.put(`http://localhost:3000/api/livros/${_id}`, livro)
+    .subscribe((res => {
+      const copia = [...this.livros];
+      const indice = copia.findIndex(liv => liv._id === livro._id);
+      copia[indice] = livro;
+      this.livros = copia;
+      this.listaLivrosAtualizada.next([...this.livros]);
+    }))
   }
 
   adicionarLivro(titulo: string, id: string, autor: string, nPaginas: string) {
