@@ -1,27 +1,31 @@
 <mat-card>
-
-    <mat-card-header>
-      <mat-card-title>Cadastro de Livros</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <form (submit)="onSalvarLivro(livroForm)" #livroForm='ngForm'>
-        <mat-form-field>
-          <input type="text" matInput placeholder="Titulo" name="titulo" [ngModel]="livro?.titulo" #nome='ngModel' required minlength='4'>
-          <mat-error *ngIf='nome.invalid'>Insira um título válido</mat-error>
-        </mat-form-field>
-        <mat-form-field>
-          <input type="text" matInput placeholder="Id" name="id" [ngModel]="livro?.id" #id='ngModel' required>
-          <mat-error *ngIf='id.invalid'>Insira um id válido</mat-error>
-        </mat-form-field>
-        <mat-form-field>
-          <input type="text" matInput placeholder="Autor" name="autor" [ngModel]="livro?.autor" #autor='ngModel' required>
-          <mat-error *ngIf='autor.invalid'>Insira um autor válido</mat-error>
-        </mat-form-field>
-        <mat-form-field>
-          <input type="text" matInput placeholder="Número de Páginas" name="nPaginas" [ngModel]="livro?.nPaginas" #nPaginas='ngModel' required>
-          <mat-error *ngIf='nPaginas.invalid'>Insira um número de páginas válido</mat-error>
-        </mat-form-field>
-        <button color='accent' mat-raised-button>Salvar livro</button>
-      </form>
-    </mat-card-content>
+  <mat-card-header>
+    <mat-card-title>Cadastro de Livros</mat-card-title>
+  </mat-card-header>
+  <mat-spinner *ngIf="estaCarregando"></mat-spinner>
+  <mat-card-content>
+    <form [formGroup]="form" (submit)="onSalvarLivro()" *ngIf="!estaCarregando">
+      <mat-form-field>
+        <input type="text" matInput placeholder="Titulo" name="titulo" formControlName="titulo">
+        <mat-error *ngIf="form.get('titulo').invalid">Insira um título válido</mat-error>
+      </mat-form-field>
+      <div>
+        <button mat-stroked-button type="button" (click)="selecionaArquivo.click()">Selecionar Imagem</button>
+        <input type="file" #selecionaArquivo>
+      </div>
+      <mat-form-field>
+        <input type="text" matInput placeholder="Id" name="id" formControlName="id">
+        <mat-error *ngIf="form.get('id').invalid">Insira um id válido</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input type="text" matInput placeholder="Autor" name="autor" formControlName="autor">
+        <mat-error *ngIf="form.get('autor').invalid">Insira um autor válido</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input type="text" matInput placeholder="Número de Páginas" name="nPaginas" formControlName="nPaginas">
+        <mat-error *ngIf="form.get('nPaginas').invalid">Insira um número de páginas válido</mat-error>
+      </mat-form-field>
+      <button color='accent' mat-raised-button>Salvar livro</button>
+    </form>
+  </mat-card-content>
 </mat-card>

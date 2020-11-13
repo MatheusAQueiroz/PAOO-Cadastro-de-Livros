@@ -3,14 +3,14 @@ import { Livro } from './livro.model';
 import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { stringify } from '@angular/compiler/src/util';
+import { Router } from '@angular/router';
 
 @Injectable({providedIn: 'root'})
 export class LivroService {
   private livros: Livro[] = [];
   private listaLivrosAtualizada = new Subject<Livro[]>();
 
-  constructor (private httpClient: HttpClient) {}
+  constructor (private httpClient: HttpClient, private router: Router) {}
 
   getLivro(idLivro: string) {
     return this.httpClient.get<{_id: string, titulo: string, id: string, autor: string, nPaginas: string}>(`http://localhost:3000/api/livros/${idLivro}`);
@@ -53,6 +53,7 @@ export class LivroService {
       copia[indice] = livro;
       this.livros = copia;
       this.listaLivrosAtualizada.next([...this.livros]);
+      this.router.navigate(['/']);
     }))
   }
 
@@ -68,6 +69,7 @@ export class LivroService {
       livro._id = dados._id
       this.livros.push(livro);
       this.listaLivrosAtualizada.next([...this.livros]);
+      this.router.navigate(['/']);
     })
   }
 
